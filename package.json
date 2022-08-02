@@ -2,7 +2,7 @@
   "name": "tiny-tinify-compress",
   "version": "0.0.4",
   "packageManager": "pnpm@6.32.3",
-  "description": "vitesse",
+  "description": "tiny-tinify-compress",
   "author": "Simon He",
   "license": "MIT",
   "repository": {
@@ -52,14 +52,18 @@
     "chokidar": "^3.5.3",
     "figlet": "^1.5.2",
     "file-type": "^17.1.4",
+    "imagemin": "^8.0.1",
+    "imagemin-gifsicle": "^7.0.0",
     "ora": "^6.1.2",
     "pkg-types": "^0.3.3",
     "tinify": "^1.6.1",
+    "uuid": "^8.3.2",
     "vue": "^3.2.36"
   },
   "devDependencies": {
     "@antfu/eslint-config": "^0.25.0",
     "@types/figlet": "^1.5.4",
+    "@types/imagemin-gifsicle": "^7.0.1",
     "@types/node": "^17.0.38",
     "@vitejs/plugin-vue": "^3.0.1",
     "bumpp": "^7.1.1",
@@ -72,7 +76,7 @@
     "vitest": "^0.13.1"
   },
   "tinifyCompress": {
-    "key": "your own key",
+    "key": "DZkjgp25tVjhkLG8GXk0nF3tpNSkq7kX",
     "includes": [
       "./assets/**"
     ]

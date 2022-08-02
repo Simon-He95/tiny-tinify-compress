@@ -1,11 +1,15 @@
 import { cwd } from 'node:process'
 import path from 'path'
+import fs from 'fs'
 import tinify from 'tinify'
 import chokidar from 'chokidar'
 import ora from 'ora'
 import figlet from 'figlet'
 import { fileTypeFromFile } from 'file-type'
 import { readPackageJSON } from 'pkg-types'
+import imagemin from 'imagemin'
+import imageminGifsicle from 'imagemin-gifsicle'
+
 export async function tinifyCompress() {
   const pkg = await readPackageJSON(path.resolve(cwd(), './package.json')) as any
   if (!pkg)
@@ -27,6 +31,15 @@ export async function tinifyCompress() {
         if (event === 'add') {
           const spinner = ora({ text: `Loading ${pathDir}`, color: 'yellow' }).start()
           const { mime = '' } = await fileTypeFromFile(pathDir) || {}
+          if (mime === 'image/gif')
+            return compressGif(pathDir, spinner)
+
+          console.log(mime)
+          if (mime === 'video/webm' || mime === 'video/mp4') {
+            // todo
+            // return compressVideo(pathDir, spinner)
+            return spinner.fail(`mime ${mime} is not supported`)
+          }
           if (!types.includes(mime))
             return spinner.fail(`mime ${mime} is not supported`)
           compressImage(pathDir, spinner)
@@ -39,10 +52,30 @@ export async function tinifyCompress() {
     const copyrighted = source.preserve('copyright', 'creation')
     copyrighted.toFile(path, (err) => {
       if (err)
-        return spinner.error(err)
+        return spinner.fail(err?.message)
       spinner.succeed(`${path} compressed successfully`)
     })
   }
+  async function compressGif(pathDir: string, spinner: any) {
+    const { data } = (await imagemin([pathDir], {
+      plugins: [
+        imageminGifsicle({
+          optimizationLevel: 3,
+        }),
+      ],
+    }))?.[0]
+
+    try {
+      await fs.writeFileSync(pathDir, data)
+      spinner.succeed(`${pathDir} compressed successfully`)
+    }
+    catch (error: any) {
+      spinner.fail(error)
+    }
+  }
+  // async function compressVideo(pathDir: string, spinner: any) {
+  // todo
+  // }
 }
 
 tinifyCompress()
