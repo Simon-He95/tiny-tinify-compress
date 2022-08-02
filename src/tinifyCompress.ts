@@ -34,7 +34,6 @@ export async function tinifyCompress() {
           if (mime === 'image/gif')
             return compressGif(pathDir, spinner)
 
-          console.log(mime)
           if (mime === 'video/webm' || mime === 'video/mp4') {
             // todo
             // return compressVideo(pathDir, spinner)

@@ -1,5 +1,5 @@
 ## tiny-tinify-compress
-借助[tinify](https://tinypng.com/)提供的api实现一个简单的压缩工具
+借助[tinify](https://tinypng.com/)提供的api实现一个简单的压缩工具,
 gif图片的实现来源于[imagemin-gifsicle](https://github.com/imagemin/imagemin-gifsicle)
 
 ## 安装
