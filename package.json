@@ -76,7 +76,7 @@
     "vitest": "^0.13.1"
   },
   "tinifyCompress": {
-    "key": "DZkjgp25tVjhkLG8GXk0nF3tpNSkq7kX",
+    "key": "your own key",
     "includes": [
       "./assets/**"
     ]
