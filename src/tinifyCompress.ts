@@ -44,10 +44,10 @@ export async function tinifyCompress() {
       })
     })
   })
-  async function compressImage(pathDir: string, spinner: any) {
+  function compressImage(pathDir: string, spinner: any) {
     const source = tinify.fromFile(pathDir)
     const copyrighted = source.preserve('copyright', 'creation')
-    copyrighted.toFile(pathDir, async (err) => {
+    copyrighted.toFile(pathDir, (err) => {
       if (err)
         return spinner.fail(err?.message)
       addFlag(pathDir, spinner)
