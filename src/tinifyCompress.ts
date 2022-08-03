@@ -12,6 +12,7 @@ import imageminGifsicle from 'imagemin-gifsicle'
 
 export async function tinifyCompress() {
   const pkg = await readPackageJSON(path.resolve(cwd(), './package.json')) as any
+  const buf = Buffer.from('compressed', 'latin1')
   if (!pkg)
     return console.error('package.json not found in current directory')
   const directories: string[] = pkg?.tinifyCompress?.includes
@@ -29,16 +30,13 @@ export async function tinifyCompress() {
     directories.forEach((directory) => {
       chokidar.watch(path.resolve(cwd(), directory)).on('all', async (event, pathDir) => {
         if (event === 'add') {
-          const spinner = ora({ text: `Loading ${pathDir}`, color: 'yellow' }).start()
+          const data = await fs.readFileSync(pathDir)
+          const spinner = ora({ text: `${pathDir}`, color: 'yellow', spinner: 'aesthetic' }).start()
+          if (isEqual(data.slice(-10), buf))
+            return spinner.succeed(`${pathDir} already compressed 🎉`)
           const { mime = '' } = await fileTypeFromFile(pathDir) || {}
           if (mime === 'image/gif')
             return compressGif(pathDir, spinner)
-
-          if (mime === 'video/webm' || mime === 'video/mp4') {
-            // todo
-            // return compressVideo(pathDir, spinner)
-            return spinner.fail(`mime ${mime} is not supported`)
-          }
           if (!types.includes(mime))
             return spinner.fail(`mime ${mime} is not supported`)
           compressImage(pathDir, spinner)
@@ -46,13 +44,13 @@ export async function tinifyCompress() {
       })
     })
   })
-  function compressImage(path: string, spinner: any) {
-    const source = tinify.fromFile(path)
+  async function compressImage(pathDir: string, spinner: any) {
+    const source = tinify.fromFile(pathDir)
     const copyrighted = source.preserve('copyright', 'creation')
-    copyrighted.toFile(path, (err) => {
+    copyrighted.toFile(pathDir, async (err) => {
       if (err)
         return spinner.fail(err?.message)
-      spinner.succeed(`${path} compressed successfully`)
+      addFlag(pathDir, spinner)
     })
   }
   async function compressGif(pathDir: string, spinner: any) {
@@ -65,16 +63,32 @@ export async function tinifyCompress() {
     }))?.[0]
 
     try {
-      await fs.writeFileSync(pathDir, data)
+      addFlag(pathDir, spinner, data)
       spinner.succeed(`${pathDir} compressed successfully`)
     }
     catch (error: any) {
       spinner.fail(error)
     }
   }
-  // async function compressVideo(pathDir: string, spinner: any) {
-  // todo
-  // }
+  function isEqual(arr1: Buffer, arr2: Buffer) {
+    for (let i = 0; i < arr1.length; i++) {
+      if (arr1[i] !== arr2[i])
+        return false
+    }
+    return true
+  }
+  function addFlag(pathDir: string, spinner: any, source?: Buffer) {
+    const data = source ?? fs.readFileSync(pathDir)
+    const k = new Uint8Array(data.length + buf.length)
+    for (let i = 0; i < data.length; i++)
+      k[i] = data[i]
+
+    for (let i = 0; i < buf.length; i++)
+      k[data.length + i] = buf[i]
+
+    fs.writeFileSync(pathDir, k)
+    spinner.succeed(`${pathDir} compressed successfully`)
+  }
 }
 
 tinifyCompress()
