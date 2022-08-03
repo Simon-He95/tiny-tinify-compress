@@ -1,6 +1,8 @@
 ## tiny-tinify-compress
-借助[tinify](https://tinypng.com/)提供的api实现一个简单的压缩工具,
-gif图片的实现来源于[imagemin-gifsicle](https://github.com/imagemin/imagemin-gifsicle)
+- 依赖[tinify](https://tinypng.com/)提供的api实现一个简单的压缩工具
+- gif图片的实现来源于[imagemin-gifsicle](https://github.com/imagemin/imagemin-gifsicle)
+- 压缩过的图片会被自动跳过，不会重复压缩
+- 下面又申请key的链接,免费提供一个我自己的key：DZkjgp25tVjhkLG8GXk0nF3tpNSkq7kX
 
 ## 安装
 ```shell
