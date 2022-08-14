@@ -9,6 +9,7 @@ import { fileTypeFromFile } from 'file-type'
 import { readPackageJSON } from 'pkg-types'
 import imagemin from 'imagemin'
 import imageminGifsicle from 'imagemin-gifsicle'
+import { jsShell } from 'simon-js-tool'
 
 export async function tinifyCompress() {
   const pkg = await readPackageJSON(path.resolve(cwd(), './package.json')) as any
@@ -18,17 +19,21 @@ export async function tinifyCompress() {
   const directories: string[] = pkg?.tinifyCompress?.includes
   if (!directories)
     return console.error('please add directories to tinifyCompress.includes in package.json')
+
   const key = pkg?.tinifyCompress?.key
   if (!key)
     return console.error('Please provide a valid tinify key in package.json tintifyCompress.key')
-  tinify.key = key
+  const hasCache = jsShell('test -f ~/tinify_key.txt && echo "true" || echo "false"')?.trim()
+  tinify.key = (hasCache === 'true'
+    && jsShell('cat ~/tinify_key.txt')?.trim())
+    || (key || jsShell('gum input --placeholder "input key"'))?.trim()
   figlet('Tinify Compress', (err, data) => {
     if (err)
       return console.log('Something went wrong...')
     console.log(data)
     const types = ['image/webp', 'image/jpeg', 'image/png', 'image/jpg', 'image/jfif']
     directories.forEach((directory) => {
-      chokidar.watch(path.resolve(cwd(), directory)).on('all', async (event, pathDir) => {
+      const watcher = chokidar.watch(path.resolve(cwd(), directory)).on('all', async (event, pathDir) => {
         if (event === 'add') {
           const data = await fs.readFileSync(pathDir)
           const originalSize = `${(data.length / 1024).toFixed(2)}kb`
@@ -43,6 +48,7 @@ export async function tinifyCompress() {
           compressImage(pathDir, spinner, originalSize)
         }
       })
+      watcher.on('ready', () => console.log('finish compression'))
     })
   })
   function compressImage(pathDir: string, spinner: any, originalSize?: string) {
@@ -52,6 +58,7 @@ export async function tinifyCompress() {
       if (err)
         return spinner.fail(err?.message)
       addFlag(pathDir, spinner, originalSize)
+      jsShell(`echo ${key}> ~/tinify_key.txt`)
     })
   }
   async function compressGif(pathDir: string, spinner: any, originalSize?: string) {
