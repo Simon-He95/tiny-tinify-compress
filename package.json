@@ -79,7 +79,7 @@
   "tinifyCompress": {
     "key": "DZkjgp25tVjhkLG8GXk0nF3tpNSkq7kX",
     "includes": [
-      "./assets/**"
+      "./assets"
     ]
   },
   "eslintConfig": {

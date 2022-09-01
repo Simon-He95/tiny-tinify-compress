@@ -25,7 +25,10 @@ npm i -g tiny-tinify-compress
 
 ## 使用
 ```shell
+## 如果配置了key，否则第一次会提示你输入key
   compress
+## 可以指定需要压缩的目录
+  compress ./assets ./public/images
 ```
 <img src="./assets/kv.jpg" />
 
