@@ -1,4 +1,6 @@
-## tiny-tinify-compress
+<span><div align="center">![picture](/assets/logo.png)</div></span>
+
+## 介绍
 - 依赖[tinify](https://tinypng.com/)提供的api实现一个简单的压缩工具
 - gif图片的实现来源于[imagemin-gifsicle](https://github.com/imagemin/imagemin-gifsicle)
 - 压缩过的图片会被自动跳过，不会重复压缩
